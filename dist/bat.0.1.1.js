@@ -117,7 +117,11 @@
     var stage = new base.Page();
     var openAPI = {
     
-        goTo : function(uri){
+        config : function(config){
+            
+        },
+        
+        goto : function(uri){
             stage.src =   uri;  
         },
         

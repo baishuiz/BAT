@@ -1,4 +1,26 @@
+// API 完整性测试
+describe("1.0 API", function(){
+    it("全局配置 - Bat.config", function(){
+        expect(Bat.config).toBeDefined();
+    });
+    
+    it("运行测试用例", function(){
+        expect(Bat.test).toBeDefined();
+    });
+    
+    it("跳转页面", function(){
+        expect(Bat.goto).toBeDefined()
+    })
+    
+})
+
+
+// 基础功能测试
+
+
+/*
 describe("Bat", function(){
+    
     it("test()方法执行", function(done){
        var testResult = "";
        Bat.test("简单测试", function() {
@@ -46,3 +68,4 @@ describe("Bat", function(){
 });
 
 
+*/

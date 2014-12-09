@@ -1,15 +1,11 @@
-/*
- * @desc:  全局配置
- * @param: baseURI : 被测试页面入口
- * @param: logServer : 日志服务地址
- * @param: timeout : 页面加载超时时间，单位毫秒
- */
 
-Air.config = {
+// 全局配置 
+Bat.config({
     baseURI : "localhost/webapp/hotel/",
     logServer : "http://git.airair.me",
     tiemout : 10000
-}
+});
+
 
 
 var URL = {
@@ -18,9 +14,9 @@ var URL = {
 }
 
 
-Air.test("国内酒店预订流程", function() {
+Bat.test("国内酒店预订流程", function() {
     
-    Air.goTo(URL.root);
+    Bat.goTo(URL.root);
     Air.page(URL.root).test("进入酒店查询页", function() {
         var title = Air.get("#headerview h1").innerHTML;
         Air.the(title).is("国内/海外酒店");
