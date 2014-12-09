@@ -15,8 +15,8 @@
 
     var userCase = {
 
-        set : function(case){
-            return stack.push(case);
+        set : function(tcase){
+            return stack.push(tcase);
         },
 
         get : function() {

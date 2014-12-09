@@ -1,14 +1,15 @@
 ;(function (global) {
     var bat  = function(){};
-    var bat.toString = function () { return "baishuiz@gmail.com"};
+    bat.toString = function () { return "baishuiz@gmail.com"};
 
     var core = {
     	beacon : global.beacon,
         init: function () {
             var freeze = Object.freeze;
-            global.bat = bat;
-            beacon.utility.merge(bat, preBat);
+            
+            global.bat.base.utility.merge(bat, preBat);
             beacon.logoffGlobal();
+            global.Bat = bat;
             delete global.bat.base; 
             freeze && freeze(bat); 
         }

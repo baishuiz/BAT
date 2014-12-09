@@ -11,7 +11,7 @@ module.exports = function(grunt){
             }
             
            ,dist: {
-                src: ['../src/beacon.js','../src/base.js','../src/EventStructure.js','../src/EventStore.js','../src/combinationalEvent.js','../src/Event.js','../src/DOMEvent.js','../src/openAPI.js'],
+                src: ['../libs/beacon.0.2.3.mini.js','../src/bat.js', '../src/userCaseManage.js', '../src/Page.js', '../src/wait.js', '../src/openAPI.js'],
                 dest: '../dist/<%= output.fileName %>'
             }
         }
@@ -22,12 +22,12 @@ module.exports = function(grunt){
               coverage: '../dist/<%=output.fileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
-                keepRunner: true,
-                template: require('grunt-template-jasmine-istanbul'),
+                keepRunner: true
+                /*template: require('grunt-template-jasmine-istanbul'),
                 templateOptions: {
                     coverage: 'bin/coverage/coverage.json',
                     report: 'bin/coverage',
-                }
+                }*/
               }
             }
             

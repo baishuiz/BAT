@@ -1,29 +1,29 @@
-;(function (bat) {
+;(function (global) {
+    var bat  = function(){};
+    bat.toString = function () { return "baishuiz@gmail.com"};
+
+    var core = {
+    	beacon : global.beacon,
+        init: function () {
+            var freeze = Object.freeze;
+            global.bat = bat;
+            bat.utility.merge(bat, preBat);
+            bat.logoffGlobal();
+            delete global.bat.base; 
+            freeze && freeze(bat); 
+        }
+    };
+    
+    
+    var preBat = {base:core}; 
+    global.bat = preBat; 
+    
+})(this);;;(function (bat) {
     var base = bat.base;
     var userCaseManage = new base.TaskManage();
     var segmentManger  = new base.TaskManage();
-    var stage = new base.Page();
+
     var openAPI = {
-    
-        goTo : function(uri){
-            stage.src =   uri;  
-        },
-        
-        page : function(){
-            var api = {
-                test : openAPI.test,
-                wait : function(){
-                    base.wait();
-                    return api
-                }
-            }
-            
-            return api;
-        },
-        
-        get : function(selector){
-            return stage.contentDocument.querySelector(selector);
-        },
         
         the : function(target){
             return new base.Assert(target);
@@ -42,9 +42,8 @@
             userCaseManage.run();
         },
 
-        test : function(title, fn){
-             //segmentManger
-             fn && fn();
+        test : function(){
+             segmentManger
         },
 
         let : function(target) {
@@ -60,6 +59,5 @@
     };
 
     beacon.utility.blend(bat, openAPI);
-    base.utility = beacon.utility;
-    base.init();
+    bat.init();
 })(bat);
