@@ -25,5 +25,9 @@
     "grunt-jscoverage": "0.0.3",
     "grunt-template-jasmine-istanbul": "~0.3.0",
     "jscover": "~0.2.4"
+  },
+  "dependencies": {
+    "phantomjs": "~1.9.17",
+    "phantom": "~0.7.2"
   }
 }
