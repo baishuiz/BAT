@@ -3,6 +3,9 @@ var page    = webPage.create();
 // var Bat     = require('./batDemo.js');
 var fs      = require('fs');
 
+
+page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4';
+
 var caseContent = [];
 
 // 读取 Beacon
@@ -14,6 +17,43 @@ var caseContent = [];
 // 调用 Case
 // caseContent.push(fs.read('./case/testCase.js'));
 //var thecase = fs.read('./case/testCase.js');
+
+page.onError = function(msg, trace) {
+
+  var msgStack = ['ERROR: ' + msg];
+
+  if (trace && trace.length) {
+    msgStack.push('TRACE:');
+    trace.forEach(function(t) {
+      msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function +'")' : ''));
+    });
+  }
+
+  console.error(msgStack.join('\n'));
+
+};
+
+
+
+var resourceRequired = [];
+var resourceReceived = [];
+
+page.onResourceReceived = function(response) {
+  resourceReceived.push(response.url);
+  if(resourceRequired.join("") == resourceReceived.join("")) {
+  	console.log("*****************资源加载完毕")
+  	resourceRequired = [];
+    resourceReceived = [];
+  }
+  //console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
+};
+
+
+page.onResourceRequested = function(requestData, networkRequest) {
+  resourceRequired.push(requestData.url);
+  //console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData));
+};
+
 
 
 function loadCase(){
@@ -31,6 +71,7 @@ function loadCase(){
         var cc = [];
         //cc.push("var url = location.href;");
         cc.push(newCase[index]);
+        //cc.push("alert('caseDone!')");
         //cc.push(' alert(location.href); if(url == location.href) {alert("BAT::NEEDNEXT"); }');
         newCase[index] = "function(){" + cc.join(";") + "}";
     };
@@ -43,16 +84,22 @@ function loadCase(){
 
 
 function runCase (){
-    if (caseList.length<=0) return;
-	var currentCase = caseList.shift();
-	var url = page.url;
-	page.evaluateJavaScript(currentCase);
-	
+
 	setTimeout(function(){
-		if(url === page.url){
-			runCase();
-		}		
-	},3000)
+
+
+	    if (caseList.length<=0) return;
+		var currentCase = caseList.shift();
+		var url = page.url;
+		console.log("运行Case: " , currentCase)
+		page.evaluateJavaScript(currentCase);
+		
+		// setTimeout(function(){
+		// 	if(url === page.url){
+		// 		runCase();
+		// 	}		
+		// },3000)
+	},300);
 
 
 }
@@ -63,18 +110,28 @@ page.onAlert = function(msg){
 	if(msg==="BAT::URLCHANGED") {
         runCase();
 	}
+
+	if(msg==="caseDone!") {
+        runCase();
+	}	
 }
 
-function urlChangeHandle(){
+function urlChangeHandle(targetURL){
 	page.injectJs('../libs/beacon.0.2.3.mini.js');
 	page.injectJs('./batDemo.js');	
-	console.log("ok!!!!!!");
+	//console.log("URL Change To: ", targetURL);
 	runCase();
 }
 
-page.onUrlChanged = urlChangeHandle;
 
-//var theCase = 'function(){' + caseContent.join(";;;") + '}';
+
+page.onLoadFinished = function(status) {
+  console.log('Status: ' + status, page.url);
+  urlChangeHandle()
+  // Do other things here...
+};
+
+//page.onUrlChanged = urlChangeHandle;
 
 page.injectJs('../libs/beacon.0.2.3.mini.js');
 page.injectJs('./batDemo.js');

@@ -15,7 +15,9 @@ setInterval(function(){
 
 function needNext() {
 	if(location.href == currentURL) {
-        alert("BAT::NEEDNEXT");
+        return true;
+	} else {
+		return false;
 	}
 }
 
@@ -41,7 +43,12 @@ Bat.the = function(target){
     var proxy = {
     	is : function(expect) {
             var result =  (target === expect);
-            alert(result);
+            alert("the " + target.toString() + " is " + expect + "=" + result);
+            //alert("caseDone!");
+            //
+            if(needNext()){
+        	    	    setTimeout(function(){alert('caseDone!')},1000)	
+        	    	}
             return result;
     	}
     }
@@ -86,6 +93,11 @@ Bat.dom = function(selector) {
         on : function(eventName){
         	    starWait(selector, function(target){
         	    	beacon(target).on(eventName);
+        	    	//setTimeout(function(){alert('caseDone!!!')},0)
+        	    	if(needNext()){
+        	    	    setTimeout(function(){alert('caseDone!')},1000)	
+        	    	}
+        	    	
         	    });
         },
 
@@ -98,6 +110,10 @@ Bat.dom = function(selector) {
         	    	log(content);
         	    	log(result)
         	    	log("******************")
+        	    	if(needNext()){
+        	    	    setTimeout(function(){alert('caseDone!')},1000)	
+        	    	}
+        	    	
         	    });        	
         }
     }
