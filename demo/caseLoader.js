@@ -41,12 +41,11 @@ function loadCase(){
 
 
 function runCase (){
-	setTimeout(function(){
-	    if (caseList.length<=0) return;
+	if (caseList.length<=0) return;
+		//console.log("run case")
 		var currentCase = caseList.shift();
 		var url = page.url;
 		page.evaluateJavaScript(currentCase);
-	},300);
 }
 
 
@@ -72,7 +71,7 @@ function urlChangeHandle(targetURL){
 
 
 page.onLoadFinished = function(status) {
-  console.log('Status: ' + status, page.url);
+  //console.log('Status: ' + status, page.url);
   urlChangeHandle()
 };
 

@@ -1,4 +1,4 @@
-var timeout = 20 * 1000
+var timeout = 2 * 1000
 var Bat = function(){
      alert("Bat is comming!!")   
 }
@@ -8,7 +8,7 @@ var currentURL = location.href;
 setInterval(function(){
 	if(location.href != currentURL) {
 		currentURL = location.href
-		alert("BAT URL Change:" + location.href)
+		//alert("BAT URL Change:" + location.href)
 		alert("BAT::URLCHANGED");
 	}
 }, 300)
@@ -44,8 +44,10 @@ Bat.the = function(target){
     	is : function(expect) {
             var result =  (target === expect);
             if(needNext()){
-        	    setTimeout(function(){alert('caseDone!')},1000)	
+        	    //setTimeout(function(){alert('caseDone!')},1000)	
+        	    alert('caseDone!')
         	}
+        	log(result)
             return result;
     	}
     }
@@ -62,22 +64,26 @@ Bat.dom = function(selector) {
 
     function starWait(selector , then){
 	    var result;
-        // 超时，清除等待
-	    var timeoutId = setTimeout(function(){
-    		clearInterval(wait);
-    		alert("超时")
-    	}, timeout);
-
-	    var wait = setInterval(function(){
+        var start = new Date();
+        function waitit() {
             var target = hasTarget(selector);
             if(target){
-            	clearTimeout(timeoutId);
-                stopWait(wait);
+                wait && stopWait(wait);
                 then && then(target);
-            }   
-	    }, 300);    
-	    
+            }
+            return target           	
+        }
 
+	    if(!waitit()){
+		    var wait = setInterval(function(){
+	            waitit();
+	            var now = new Date();
+	            if(now - start >= timeout) {
+	            	clearInterval(wait);
+	            	log("超时！！！")
+	            }
+		    }, 300);    
+		}
     }
 
     function stopWait(wait) {
@@ -98,16 +104,21 @@ Bat.dom = function(selector) {
         },
 
         content : function(txt) {
+        	log(txt)
+    	    starWait(selector, function(target){
+    	    	var content = target.innerHTML.replace(/^\s+|\s+$/ig,"")
+    	    	var result =   content === txt;
+    	    	log("*****************")
+    	    	log(content + " vs " + txt)
+    	    	log(result)
+    	    	log("*****************")
 
-        	    starWait(selector, function(target){
-        	    	var content = target.innerHTML.replace(/^\s+|\s+$/ig,"")
-        	    	var result =   content === txt;
-        	    	log(result)
-        	    	if(needNext()){
-        	    	    setTimeout(function(){alert('caseDone!')},1000)	
-        	    	}
-        	    	
-        	    });        	
+    	    	// if(needNext()){
+    	    	//     setTimeout(function(){alert('caseDone!')},1000)	
+    	    	// }
+
+				alert('caseDone!')
+    	    });        	
         }
     }
     return then;
@@ -120,12 +131,11 @@ Bat.content = function(txt){
 	var myEles = document.getElements('*');
 	for(var i=0; i<myEles.length; i++){
 	    if(myEles[i].innerHTML == txt){
-	         result = myEles[i];
+	        result = myEles[i];
 	    }
 	}
 
     Bat.dom(result)
-
 	return Bat.dom(result);
 }
 
