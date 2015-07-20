@@ -8,7 +8,7 @@ var currentURL = location.href;
 setInterval(function(){
 	if(location.href != currentURL) {
 		currentURL = location.href
-		alert(location.href)
+		alert("BAT URL Change:" + location.href)
 		alert("BAT::URLCHANGED");
 	}
 }, 300)
@@ -43,12 +43,9 @@ Bat.the = function(target){
     var proxy = {
     	is : function(expect) {
             var result =  (target === expect);
-            alert("the " + target.toString() + " is " + expect + "=" + result);
-            //alert("caseDone!");
-            //
             if(needNext()){
-        	    	    setTimeout(function(){alert('caseDone!')},1000)	
-        	    	}
+        	    setTimeout(function(){alert('caseDone!')},1000)	
+        	}
             return result;
     	}
     }
@@ -93,7 +90,6 @@ Bat.dom = function(selector) {
         on : function(eventName){
         	    starWait(selector, function(target){
         	    	beacon(target).on(eventName);
-        	    	//setTimeout(function(){alert('caseDone!!!')},0)
         	    	if(needNext()){
         	    	    setTimeout(function(){alert('caseDone!')},1000)	
         	    	}
@@ -106,10 +102,7 @@ Bat.dom = function(selector) {
         	    starWait(selector, function(target){
         	    	var content = target.innerHTML.replace(/^\s+|\s+$/ig,"")
         	    	var result =   content === txt;
-        	    	log(txt);
-        	    	log(content);
         	    	log(result)
-        	    	log("******************")
         	    	if(needNext()){
         	    	    setTimeout(function(){alert('caseDone!')},1000)	
         	    	}
