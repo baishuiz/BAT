@@ -23,7 +23,7 @@ function loadCase(){
     var activeCase = fs.read('./case/testCase.js');
     var caseList = activeCase.split("\r\n") || [];
     var newCase = caseList.filter(function(element){
-        var reg = /^\s*\/\//;
+        var reg = /(^\s*\/\/)|(^\s*$)/;
         return !reg.test(element);
     });
 

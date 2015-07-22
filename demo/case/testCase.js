@@ -10,3 +10,7 @@
 	 Bat.dom('li[data-cityid="1"]').on("click");
 	 Bat.dom(".js_city_title").content("北京");
 //})
+
+// Bat.open("http://w-hotel-m.fat9.qa.nt.ctripcorp.com/webapp/hotel/citylist");
+// Bat.dom('li[data-cityid="1"]').content("北京")
+// Bat.dom(".js_title").content("选择城市");
