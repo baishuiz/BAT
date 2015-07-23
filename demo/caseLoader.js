@@ -7,6 +7,14 @@ page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X)
 var caseContent = [];
 
 
+var caseStack = {
+	plan : [],
+	runing : [],
+	done : []
+}
+
+
+
 page.onError = function(msg, trace) {
   var msgStack = ['ERROR: ' + msg];
   if (trace && trace.length) {
@@ -41,20 +49,32 @@ function loadCase(){
 
 
 function runCase (){
-	if (caseList.length<=0) return;
-		//console.log("run case")
-		var currentCase = caseList.shift();
-		var url = page.url;
-		page.evaluateJavaScript(currentCase);
+	if (caseStack.plan.length<=0) return;
+	//var currentCase = caseStack.plan.shift();
+	tryRunCase();
+}
+
+
+function tryRunCase(){
+	// console.log(caseStack.plan[0])
+	// console.log(caseStack.runing.length)
+	// console.log(caseStack.runing[0])
+	if(caseStack.runing.length<=0){
+        caseStack.runing.push(caseStack.plan.shift());
+        page.evaluateJavaScript(caseStack.runing[0]);
+
+	}
+
 }
 
 
 page.onAlert = function(msg){
 	switch (msg) {
 		case  "caseDone!" :
-		case  "BAT::URLCHANGED" :
-		    runCase();
-		    break;
+			var doneCase = caseStack.runing.shift();
+			doneCase && caseStack.done.push(doneCase);
+			runCase();
+	        break;
 		default :
 		    console.log(msg);
 		    break;
@@ -72,16 +92,18 @@ function urlChangeHandle(targetURL){
 
 page.onLoadFinished = function(status) {
   //console.log('Status: ' + status, page.url);
+  var doneCase = caseStack.runing.shift();
+  doneCase && caseStack.done.push(doneCase);
   urlChangeHandle()
 };
+
 
 
 // 初始化
 page.injectJs('../libs/beacon.0.2.3.mini.js');
 page.injectJs('./batDemo.js');
-var caseList = loadCase();
+caseStack.plan = loadCase();
 runCase();
-
 
 
 
