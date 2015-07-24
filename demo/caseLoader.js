@@ -50,31 +50,23 @@ function loadCase(){
 
 function runCase (){
 	if (caseStack.plan.length<=0) return;
-	//var currentCase = caseStack.plan.shift();
 	tryRunCase();
 }
 
 
 function tryRunCase(){
-	// console.log(caseStack.plan[0])
-	// console.log(caseStack.runing.length)
-	// console.log(caseStack.runing[0])
 	if(caseStack.runing.length<=0){
         caseStack.runing.push(caseStack.plan.shift());
         page.evaluateJavaScript(caseStack.runing[0]);
-
 	}
+
+	
 
 }
 
 
 page.onAlert = function(msg){
 	switch (msg) {
-		case  "caseDone!" :
-			var doneCase = caseStack.runing.shift();
-			doneCase && caseStack.done.push(doneCase);
-			runCase();
-	        break;
 		default :
 		    console.log(msg);
 		    break;
@@ -82,7 +74,7 @@ page.onAlert = function(msg){
 }
 
 
-function urlChangeHandle(targetURL){
+function urlChangeHandle(){
 	page.injectJs('../libs/beacon.0.2.3.mini.js');
 	page.injectJs('./batDemo.js');	
 	runCase();
@@ -90,12 +82,50 @@ function urlChangeHandle(targetURL){
 
 
 
-page.onLoadFinished = function(status) {
-  //console.log('Status: ' + status, page.url);
-  var doneCase = caseStack.runing.shift();
-  doneCase && caseStack.done.push(doneCase);
-  urlChangeHandle()
+
+
+page.onConsoleMessage = function(msg, lineNum, sourceId) {
+
+	switch (msg) {
+        case "BAT::CASEDONE" :
+        	nextStep();
+            break;
+        case "BAT::WAITURL" :
+            waitURL(page.url);
+            break;
+        default :
+            break;    
+	}
 };
+
+function waitURL(oldURL){
+ 
+    page.onLoadFinished = function(status) {
+    	console.log("url 88888")
+    	page.onLoadFinished = function(){};
+        nextStep(true);
+    }
+}
+
+
+function nextStep(urlChange) {
+    setTimeout(function(){
+        // 輸出Case清單
+        var doneCase = caseStack.runing.shift();
+		doneCase && caseStack.done.push(doneCase);
+        console.log("case總數",caseStack.count,";剩餘Case:", caseStack.plan.length, ";已運行:", caseStack.done.length);
+
+        // 輸出當前頁面截圖
+        page.render("case"+caseStack.done.length + ".png")
+
+        // 執行下一個case
+        urlChange 
+        ? urlChangeHandle()
+        : runCase();
+
+    },3000);    
+}
+
 
 
 
@@ -103,6 +133,7 @@ page.onLoadFinished = function(status) {
 page.injectJs('../libs/beacon.0.2.3.mini.js');
 page.injectJs('./batDemo.js');
 caseStack.plan = loadCase();
+caseStack.count = caseStack.plan.length;
 runCase();
 
 

@@ -7,8 +7,9 @@ var currentURL = location.href;
 
 var _historyPushState  =  history.pushState;
 window.history.pushState = function(json,title,url){
-    beacon.on("url change");
-    //alert("BAT URL Change to:" + url);
+    //beacon.on("url change");
+console.log("BAT::CASEDONE");
+    alert("BAT URL Change to:" + url);
     //_historyPushState.apply(window, arguments)
     _historyPushState.call(window.history,json,title,url)
     //alert("BAT::URLCHANGED");
@@ -47,6 +48,7 @@ beacon.on("BAT::PageLoaded", popStack);
 
 Bat.open = function( url ){
 	window.location = url;
+	console.log("BAT::WAITURL");
 }
 
 Bat.the = function(target){
@@ -55,7 +57,7 @@ Bat.the = function(target){
             var result =  (target === expect);
             log(" the is run")
             log(result)
-        	alert('caseDone!')
+        	alert('caseDone!');
             return result;
     	}
     }
@@ -88,6 +90,7 @@ Bat.dom = function(selector) {
 	    if(!waitit()){
 		    var wait = setInterval(function(){
 	            waitit();
+	            alert(".")
 	            var now = new Date();
 	            if(now - start >= timeout) {
 	            	clearInterval(wait);
@@ -106,9 +109,14 @@ Bat.dom = function(selector) {
     var then = {
         on : function(eventName){
         	    starWait(selector, function(target){
-        	    	//log("事件执行" + eventName)
+        	    	log("事件执行" + eventName)
         	    	beacon(target).on(eventName);
-        	    	alert('caseDone!')
+        	    	// setTimeout(function(){
+        	    	// 	alert('caseDone!')
+        	    	// },1000)
+        	    	//console.log('caseDone!')
+        	    	console.log('BAT::CASEDONE')
+        	    	
         	    });
         },
 
@@ -122,7 +130,7 @@ Bat.dom = function(selector) {
     	    	log(result)
     	    	log("*****************")
 
-				alert('caseDone!')
+				console.log('BAT::CASEDONE')
     	    });        	
         }
     }
@@ -146,7 +154,7 @@ Bat.content = function(txt){
 }
 
 window.onpopstate=function() {
-	//alert("URL 变化了！！！！！！！！！！")
+	alert("URL 变化了！！！！！！！！！！")
 }
 
 Bat.wait = {
