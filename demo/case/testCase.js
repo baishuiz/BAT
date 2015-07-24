@@ -23,5 +23,10 @@
 
 //})
 
-// Bat.open("http://m.ctrip.com/webapp/hotel/beijing1/");
-// Bat.dom("h4.ellips").content("北京世纪华天大酒店");
+
+Bat.test("担保订单", function(){
+    Bat.test("返现流程", function(){
+        Bat.open("http://m.ctrip.com/");
+		Bat.dom("a[title='酒店']").on("click");	
+    })
+})

@@ -1,0 +1,55 @@
+[
+	{
+		"title" : "担保订单",
+		"isPass" : false,
+		"result" :  [
+						{
+							"title" : "返现流程",
+							"isPass" : false,
+							"result" : [
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : false,
+												"errInfo" : {}
+											},
+
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : true,
+												"errInfo" : {}
+											},
+
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : true,
+												"errInfo" : {}
+											}																						
+										]
+						},
+
+						{
+							"title" : "优惠券流程",
+							"isPass" : true,
+							"result" : [
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : true,
+												"errInfo" : {}
+											},
+
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : true,
+												"errInfo" : {}
+											},
+
+											{
+												"case" : "Bat.open('http://m.ctrip.com/')",
+												"isPass" : true,
+												"errInfo" : {}
+											}																						
+										]
+						}						
+					]
+	}
+]
