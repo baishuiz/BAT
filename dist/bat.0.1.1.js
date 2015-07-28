@@ -6,162 +6,134 @@
     	beacon : global.beacon,
         init: function () {
             var freeze = Object.freeze;
-            
+
             global.bat.base.utility.merge(bat, preBat);
-            beacon.logoffGlobal();
+            //beacon.logoffGlobal();
             global.Bat = bat;
-            delete global.bat.base; 
-            freeze && freeze(bat); 
+            //delete global.bat.base;
+            freeze && freeze(bat);
         }
     };
-    
-    
-    var preBat = {base:core}; 
-    global.bat = preBat; 
-    
-})(this);;/*
- * @module  userCaseManage
- * MIT Licensed
- * @author  baishuiz@gmail.com
- */
-;(function (bat) {
+
+
+    var preBat = {base:core};
+    global.bat = preBat;
+    console.log(global===window)
+
+})(this);
+;;(function (bat) {
     var base = bat.base;
-
-
-
-    var tryDoCase = function(tcase) {
-        setTimeOut(tcase,0);
-    };
-
-
-    var userCase = {
-
-        set : function(tcase){
-            return stack.push(tcase);
-        },
-
-        get : function() {
-            var  activeCase = stack.shift();
-            dones.push(activeCase);
-            return activeCase;
-        },
-
-        doneList : function(){
-            return dones;
-        },
-
-        todoList : function (){
-            return stack;
-        },
-
-
-        run : function(){
-            if(stack.length>0 && !isStop) {
-                tryDoCase(get().tcase);
-                tryDoCase(run);
-            }    
-        },
-
-        stop : function(){
-            isStop =  true;
-        }     
-    };
-
-    var TaskManage = function(){
-        var stack   = [];
-        var dones = [];
-        var isStop = false;
-    };
-
-    TaskManage.prototype = userCase;
-    base.TaskManage = TaskManage;
-}) (bat);;;(function (bat) {
-    var base = bat.base;
-    
-    function Page(URI){
-        var ifm = document.createElement("iframe");
-        var body = document.head || document.querySelector("head");
-        var location = document.location;
-        //ifm.setAttribute("src", URI);
-        body.appendChild(ifm);
-        return ifm;
+    var events = {
+      complete : beacon.createEvent('complete'),
+      over : beacon.createEvent('over')
     }
-    base.Page = Page;
-}) (bat);;;(function(bat){
-    var 
-        base   = bat.base,
-        beacon = base.beacon
-    ;
-    
-    var 
-        wait = function(selector){
-            var 
-                callBack = function(e){ 
-                    console.log("test wait done!",e);
-                    //beacon(document).off("DOMNodeInsertedIntoDocument", callBack);
-                    //beacon(document.body).off("DOMNodeInserted", callBack);
-                    document.body.removeEventListener("DOMNodeInserted", callBack);
-                }    
-            ;
-            //beacon(document).on("DOMNodeInsertedIntoDocument", callBack);
-            //beacon(document.body).on("DOMNodeInserted", callBack);
-            document.body.addEventListener("DOMNodeInserted", callBack);
-        }
-    ;    
-    
-    base.wait = wait;
-})(bat);;;(function (bat) {
+
+    base.events = events;
+}) (bat);
+;;(function (bat) {
     var base = bat.base;
-    var userCaseManage = new base.TaskManage();
-    var segmentManger  = new base.TaskManage();
-    var stage = new base.Page();
+    var events = {
+      complete : beacon.createEvent('complete'),
+      over : beacon.createEvent('over')
+    }
+
+
+    var result = [];
+    var activeContext = result;
+
+
+    var timing = function(){
+          timing.start = true;
+          setTimeout(function(){
+            timing.start = false;
+            beacon.on(events.complete);
+          },0);
+    }
+
+
+    beacon.on(events.complete, function(){
+        var parentContext = activeContext;
+        for (var i = 0; i < parentContext.length; i++) {
+          activeContext = parentContext[i];
+          try{
+              activeContext.data.callBack();
+          } catch(err){
+              console.log(err);
+          }
+        }
+        activeContext.parent === result && beacon.on(events.over, result);
+    });
+
+
+    function test(title, callBack){
+        timing.start || timing();
+        var data = {title:title, callBack: callBack};
+        var context = activeContext.subNodes || activeContext;
+        context.push({
+          data:data,
+          parent : activeContext,
+          subNodes : []
+        });
+    }
+
+    test.events = events;
+    base.test = test;
+}) (bat);
+;;(function (bat) {
+    var base = bat.base;
+    // var userCaseManage = new base.TaskManage();
+    // var segmentManger  = new base.TaskManage();
+    //var stage = new base.Page();
     var openAPI = {
-    
+
         config : function(config){
-            
+
         },
-        
+
         goto : function(uri){
-            stage.src =   uri;  
+            stage.src =   uri;
         },
-        
+
         page : function(){
-            var api = {
-                test : openAPI.test,
-                wait : function(){
-                    base.wait();
-                    return api
-                }
-            }
-            
-            return api;
+            // var api = {
+            //     test : openAPI.test,
+            //     wait : function(){
+            //         base.wait();
+            //         return api
+            //     }
+            // }
+            //
+            // return api;
         },
-        
+
         get : function(selector){
-            return stage.contentDocument.querySelector(selector);
+          //  return stage.contentDocument.querySelector(selector);
         },
-        
+
         the : function(target){
-            return new base.Assert(target);
+            //return new base.Assert(target);
         },
 
         userCase : function(desc, startPath, tcase){
-            var caseProxy = {
-              desc    : desc,
-              startPath   : startPath,
-              tryDoCase : tcase
-            };
-            userCaseManage.set(caseProxy);            
+            // var caseProxy = {
+            //   desc    : desc,
+            //   startPath   : startPath,
+            //   tryDoCase : tcase
+            // };
+            // userCaseManage.set(caseProxy);
         },
 
         start : function(){
-            userCaseManage.run();
+            // userCaseManage.run();
         },
 
         test : function(title, fn){
-             //segmentManger
-             fn && fn();
+            //  //segmentManger
+            //  fn && fn();
+            base.test.call(this, title, fn);
         },
+
+        events : base.events,
 
         let : function(target) {
             return {
@@ -172,7 +144,7 @@
 
         }
 
-        
+
     };
 
     beacon.utility.blend(bat, openAPI);

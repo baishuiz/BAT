@@ -9,13 +9,13 @@ module.exports = function(grunt){
             options: {
                 separator: ';'
             }
-            
+
            ,dist: {
-                src: ['../libs/beacon.0.2.3.mini.js','../src/bat.js', '../src/userCaseManage.js', '../src/Page.js', '../src/wait.js', '../src/openAPI.js'],
+                src: ['../libs/beacon.0.2.3.mini.js','../src/client/bat.js','../src/client/events.js','../src/client/test.js', '../src/client/openAPI.js'],
                 dest: '../dist/<%= output.fileName %>'
             }
         }
-        
+
        ,jasmine: {
             pivotal: {
               src: '../dist/<%=output.fileName %>',
@@ -23,21 +23,22 @@ module.exports = function(grunt){
               options: {
                 specs: '../test/spec/*Spec.js',
                 keepRunner: true
-                /*template: require('grunt-template-jasmine-istanbul'),
-                templateOptions: {
-                    coverage: 'bin/coverage/coverage.json',
-                    report: 'bin/coverage',
-                }*/
+                // template: require('grunt-template-jasmine-istanbul'),
+                // templateOptions: {
+                //     coverage: 'bin/coverage/coverage.json',
+                //     report: 'bin/coverage',
+                //     files:'../dist/<%=output.fileName %>'
+                // }
               }
             }
-            
+
            ,mini: {
               src: '../dist/<%= output.minFileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
                 keepRunner:true
               }
-            }            
+            }
         }
        ,uglify: {
           mini: {
@@ -45,10 +46,10 @@ module.exports = function(grunt){
               '../dist/<%= output.minFileName %>': ['../dist/<%= output.fileName %>']
             }
           }
-        }    
-       
+        }
+
     });
-    
+
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-uglify');

@@ -1,27 +1,23 @@
 // API 完整性测试
 describe("1.0 API", function(){
-    it("全局配置 - Bat.config", function(){
-        expect(Bat.config).toBeDefined();
-    });
-
     it("运行测试用例", function(){
-        expect(Bat.test).toBeDefined();
+        expect(bat.test).toBeDefined();
     });
-
-    it("跳转页面", function(){
-        expect(Bat.goto).toBeDefined()
-    })
-
 })
 
 
-// describe("Bat.test", function(){
-//     it("", function(){
-//         bat.test(){
-//           fsfsdf
-//         }
-//     })
-// })
+describe("Bat.test", function(){
+    it("单个case，无嵌套", function(done){
+        beacon(bat.test).on(bat.events.complete, function(eventObj,data){
+              console.log(a,b);
+              expect(data).toBe("ok");
+        })
+
+        bat.test("title", function(){
+          console.log("over")
+        })
+    })
+})
 
 
 // 基础功能测试

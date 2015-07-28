@@ -6,17 +6,18 @@
     	beacon : global.beacon,
         init: function () {
             var freeze = Object.freeze;
-            
+
             global.bat.base.utility.merge(bat, preBat);
-            beacon.logoffGlobal();
+            //beacon.logoffGlobal();
             global.Bat = bat;
-            delete global.bat.base; 
-            freeze && freeze(bat); 
+            //delete global.bat.base;
+            freeze && freeze(bat);
         }
     };
-    
-    
-    var preBat = {base:core}; 
-    global.bat = preBat; 
-    
+
+
+    var preBat = {base:core};
+    global.bat = preBat;
+    console.log(global===window)
+
 })(this);
