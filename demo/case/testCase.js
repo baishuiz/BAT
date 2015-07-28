@@ -24,9 +24,19 @@
 //})
 
 
-Bat.test("担保订单", function(){
-    Bat.test("返现流程", function(){
-        Bat.open("http://m.ctrip.com/");
-		Bat.dom("a[title='酒店']").on("click");	
-    })
-})
+// Bat.test("担保订单", function(){
+//     Bat.test("首日担保", function(){
+//         Bat.open("http://m.ctrip.com/");
+// 		Bat.dom("a[title='酒店']").on("click");	
+//     })
+
+//     Bat.test("超时担保", function(){
+//         Bat.open("http://m.ctrip.com/");
+// 		Bat.dom("a[title='酒店']").on("click");	
+//     })
+
+//     Bat.test("强制担保", function(){
+//         Bat.open("http://m.ctrip.com/");
+// 		Bat.dom("a[title='酒店']").on("click");	
+//     })        
+// })
