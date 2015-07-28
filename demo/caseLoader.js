@@ -29,7 +29,8 @@ page.onError = function(msg, trace) {
 
 function loadCase(){
     var activeCase = fs.read('./case/testCase.js');
-    var caseList = activeCase.split("\r\n") || [];
+    var caseList = activeCase.split("\n") || [];
+		console.log(caseList)
     var newCase = caseList.filter(function(element){
         var reg = /(^\s*\/\/)|(^\s*$)/;
         return !reg.test(element);
@@ -60,7 +61,7 @@ function tryRunCase(){
         page.evaluateJavaScript(caseStack.runing[0]);
 	}
 
-	
+
 
 }
 
@@ -76,7 +77,7 @@ page.onAlert = function(msg){
 
 function urlChangeHandle(){
 	page.injectJs('../libs/beacon.0.2.3.mini.js');
-	page.injectJs('./batDemo.js');	
+	page.injectJs('./batDemo.js');
 	runCase();
 }
 
@@ -94,12 +95,12 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
             waitURL(page.url);
             break;
         default :
-            break;    
+            break;
 	}
 };
 
 function waitURL(oldURL){
- 
+
     page.onLoadFinished = function(status) {
     	console.log("url 88888")
     	page.onLoadFinished = function(){};
@@ -119,11 +120,11 @@ function nextStep(urlChange) {
         page.render("case"+caseStack.done.length + ".png")
 
         // 執行下一個case
-        urlChange 
+        urlChange
         ? urlChangeHandle()
         : runCase();
 
-    },3000);    
+    },3000);
 }
 
 
@@ -134,7 +135,5 @@ page.injectJs('../libs/beacon.0.2.3.mini.js');
 page.injectJs('./batDemo.js');
 caseStack.plan = loadCase();
 caseStack.count = caseStack.plan.length;
+console.log('开始执行')
 runCase();
-
-
-
