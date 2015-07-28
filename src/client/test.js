@@ -1,39 +1,49 @@
 ;(function (bat) {
     var base = bat.base;
     var events = {
-      complete : beacon.createEvent('complete')
+      complete : beacon.createEvent('complete'),
+      over : beacon.createEvent('over')
     }
 
-    var depth = 0;
+
+    var result = [];
+    var activeContext = result;
+
 
     var timing = function(){
           timing.start = true;
           setTimeout(function(){
             timing.start = false;
-            depth++;
             beacon.on(events.complete);
           },0);
     }
 
-    beacon.on(events.complete, function(activeContext){
-        for (var i = 0; i < activeContext.length; i++) {
-          var activeCallback = activeContext[i];
-          activeCallback();
+
+    beacon.on(events.complete, function(){
+        var parentContext = activeContext;
+        for (var i = 0; i < parentContext.length; i++) {
+          activeContext = parentContext[i];
+          try{
+              activeContext.data.callBack();
+          } catch(err){
+              console.log(err);
+          }
         }
+        activeContext.parent === result && beacon.on(events.over, result);
     });
 
-    var result = [];
-    var ROOT = -1;
+
     function test(title, callBack){
         timing.start || timing();
         var data = {title:title, callBack: callBack};
-        result.push({
+        var context = activeContext.subNodes || activeContext;
+        context.push({
           data:data,
-          parent : ROOT,
-          subNodess : null
+          parent : activeContext,
+          subNodes : []
         });
-
-
     }
+
+    test.events = events;
     base.test = test;
 }) (bat);
