@@ -46,11 +46,7 @@
             // userCaseManage.run();
         },
 
-        test : function(title, fn){
-            //  //segmentManger
-            //  fn && fn();
-            base.test.call(this, title, fn);
-        },
+        test : base.test,
 
         events : base.events,
 

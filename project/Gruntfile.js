@@ -11,7 +11,13 @@ module.exports = function(grunt){
             }
 
            ,dist: {
-                src: ['../libs/beacon.0.2.3.mini.js','../src/client/bat.js','../src/client/events.js','../src/client/test.js', '../src/client/openAPI.js'],
+                src: [
+                      '../libs/beacon.0.2.3.mini.js',
+                      '../src/client/bat.js',
+                      '../src/client/events.js',
+                      '../src/client/test.js',
+                      '../src/client/openAPI.js'
+                    ],
                 dest: '../dist/<%= output.fileName %>'
             }
         }
@@ -32,13 +38,13 @@ module.exports = function(grunt){
               }
             }
 
-           ,mini: {
-              src: '../dist/<%= output.minFileName %>',
-              options: {
-                specs: '../test/spec/*Spec.js',
-                keepRunner:true
-              }
-            }
+          //  ,mini: {
+          //     src: '../dist/<%= output.minFileName %>',
+          //     options: {
+          //       specs: '../test/spec/*Spec.js',
+          //       keepRunner:true
+          //     }
+          //   }
         }
        ,uglify: {
           mini: {

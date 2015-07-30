@@ -25,6 +25,7 @@
     var base = bat.base;
     var events = {
       complete : beacon.createEvent('complete'),
+      ooo : beacon.createEvent('ooo'),
       over : beacon.createEvent('over')
     }
 
@@ -32,51 +33,85 @@
 }) (bat);
 ;;(function (bat) {
     var base = bat.base;
-    var events = {
-      complete : beacon.createEvent('complete'),
-      over : beacon.createEvent('over')
+
+    // 初始化跟數據
+    var subTree = {
+      data     : {title:"root", callBack: null},
+      parent   : null,
+      subNodes : []
+    };
+
+    var root = subTree;
+    //caseLoad(root);
+
+    function loadSub(nodes, context) {
+      var activeCase = nodes.shift();
+      if(activeCase){
+        subTree = activeCase;
+
+        beacon(context).once(bat.events.over, function(){
+            loadSub(nodes, context);
+        });
+
+        lookAt();
+        activeCase.data && activeCase.data.callBack();
+      } else {
+        if(nodes.length==0 && context.data.title=="root"){
+          beacon.on(bat.events.ooo, root);
+        } else {
+          beacon(context.parent).on(bat.events.over);
+        }
+
+      }
     }
 
+    function caseLoad(context){
+        var isOver = context.length===0;
+        if(isOver) {
+          beacon(context.parent).on(bat.events.over);
+          return;
+        }
 
-    var result = [];
-    var activeContext = result;
+        var nodes = context.subNodes.slice(0);
+        loadSub(nodes, context);
 
+    }
+
+    function lookAt(){
+      timing.started || timing();
+      beacon(subTree).off(base.events.complete);
+      beacon(subTree).once(base.events.complete, function(){
+          var context = this;
+          caseLoad(context);
+      });
+    }
 
     var timing = function(){
-          timing.start = true;
+          timing.started = true;
           setTimeout(function(){
-            timing.start = false;
-            beacon.on(events.complete);
+            timing.started = false;
+            beacon(subTree).on(base.events.complete);
           },0);
     }
 
 
-    beacon.on(events.complete, function(){
-        var parentContext = activeContext;
-        for (var i = 0; i < parentContext.length; i++) {
-          activeContext = parentContext[i];
-          try{
-              activeContext.data.callBack();
-          } catch(err){
-              console.log(err);
-          }
-        }
-        activeContext.parent === result && beacon.on(events.over, result);
-    });
+    var test = function (title, callBack){
+      if(subTree == root){
+          lookAt();
+      }
 
-
-    function test(title, callBack){
-        timing.start || timing();
-        var data = {title:title, callBack: callBack};
-        var context = activeContext.subNodes || activeContext;
-        context.push({
-          data:data,
-          parent : activeContext,
-          subNodes : []
-        });
+      test = recordSubNode;
+      recordSubNode(title, callBack);
     }
 
-    test.events = events;
+    function recordSubNode(title, callBack){
+      subTree.subNodes.push({
+        data     : {title: title, callBack: callBack},
+        parent   : subTree,
+        subNodes : []
+      })
+    }
+
     base.test = test;
 }) (bat);
 ;;(function (bat) {
@@ -127,11 +162,7 @@
             // userCaseManage.run();
         },
 
-        test : function(title, fn){
-            //  //segmentManger
-            //  fn && fn();
-            base.test.call(this, title, fn);
-        },
+        test : base.test,
 
         events : base.events,
 

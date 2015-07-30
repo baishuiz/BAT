@@ -1,22 +1,71 @@
 // API 完整性测试
-describe("1.0 API", function(){
-    it("运行测试用例", function(){
+describe("API 完整性", function(){
+    it("bat.test", function(){
         expect(bat.test).toBeDefined();
     });
 })
 
 
 describe("Bat.test", function(){
-    it("单个case，无嵌套", function(done){
-        beacon(bat.test).on(bat.events.complete, function(eventObj,data){
-              console.log(a,b);
-              expect(data).toBe("ok");
+    it("识别嵌套顺序", function(done){
+        beacon.once(bat.events.ooo, function(eventObj, data){
+              console.log(2)
+              console.log(data)
+              data = data.subNodes
+              var firstCase  = data[0];
+              var secondCase = data[1];
+              //expect(firstCase.callBack()).toBe("预订ok");
+              expect(firstCase.data.title).toBe("预订流程");
+
+              //expect(secondCase.data.callBack()).toBe("查询ok");
+              expect(secondCase.data.title).toBe("查询流程");
+
+              var first_sub0 = firstCase.subNodes[0];
+              expect(first_sub0.data.title).toBe("预订流程.sub");
+
+              var first_sub0_sub0 = first_sub0.subNodes[0];
+              var first_sub0_sub1 = first_sub0.subNodes[1];
+              expect(first_sub0_sub0.data.callBack()).toBe("预订1ok");
+              expect(first_sub0_sub0.data.title).toBe("预订流程.sub.sub0");
+              expect(first_sub0_sub1.data.callBack()).toBe("预订2ok");
+              expect(first_sub0_sub1.data.title).toBe("预订流程.sub.sub1");
+
+
+              var secondCase_sub = secondCase.subNodes[0];
+              expect(secondCase_sub.data.title).toBe("查询流程.sub");
+
+
+
+
+              done();
         })
 
-        bat.test("title", function(){
-          console.log("over")
-        })
-    })
+        bat.test("预订流程", function(){
+          //return "预订ok"
+          bat.test("预订流程.sub", function(){
+              //return "预订ok"
+              bat.test("预订流程.sub.sub0", function(){
+                  return "预订1ok"
+              })
+
+              bat.test("预订流程.sub.sub1", function(){
+                  return "预订2ok"
+              })
+          })
+        });
+
+        bat.test("查询流程", function(){
+          bat.test("查询流程.sub", function(){
+             return "查询流程ok"
+          })
+        });
+
+        bat.test("查询流程2", function(){
+          bat.test("查询流程2.sub", function(){
+             return "查询流程2ok"
+          })
+        });
+    });
 })
 
 
