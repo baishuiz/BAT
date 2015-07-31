@@ -1,4 +1,4 @@
-//Bat.test("选择城市", function(){
+Bat.test("选择城市", function(){
 	Bat.open("http://m.ctrip.com/html5/hotel");
 	//Bat.dom("a[title='酒店']").on("click");
 
@@ -21,22 +21,22 @@
 	Bat.wait.URLChange();
 	Bat.dom(".ellips").content("地图");
 
-//})
+})
 
 
 // Bat.test("担保订单", function(){
 //     Bat.test("首日担保", function(){
 //         Bat.open("http://m.ctrip.com/");
-// 		   Bat.dom("a[title='酒店']").on("click");	
+// 		   Bat.dom("a[title='酒店']").on("click");
 //     })
 
 //     Bat.test("超时担保", function(){
 //         Bat.open("http://m.ctrip.com/");
-// 		   Bat.dom("a[title='酒店']").on("click");	
+// 		   Bat.dom("a[title='酒店']").on("click");
 //     })
 
 //     Bat.test("强制担保", function(){
 //         Bat.open("http://m.ctrip.com/");
-// 		   Bat.dom("a[title='酒店']").on("click");	
-//     })        
+// 		   Bat.dom("a[title='酒店']").on("click");
+//     })
 // })
