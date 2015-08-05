@@ -1,7 +1,6 @@
 var path = require('path');
 var childProcess = require('child_process');
 var phantomjs = require('phantomjs');
-//var open = require('open');
 
 
 phantomjs.onError = function(msg, trace) {
@@ -19,7 +18,7 @@ phantomjs.onError = function(msg, trace) {
 var binPath = phantomjs.path;
 
 var childArgs = [
-    path.join(__dirname, 'caseLoader.js')
+    path.join(__dirname, 'callPhantom.js')
 ];
 
 var ph =childProcess.execFile(binPath, childArgs, function(err, stdout, stderr){
@@ -29,7 +28,3 @@ var ph =childProcess.execFile(binPath, childArgs, function(err, stdout, stderr){
 
 process.stdin.pipe(ph.stdin);
 ph.stdout.pipe(process.stdout);
-
-//open('http://m.ctrip.com', 'firefox')
-
-console.log(path.join(__dirname, '../../demo/demo1/batDemo.js'))

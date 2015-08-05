@@ -1,4 +1,4 @@
-Bat.test("选择城市", function(){
+//Bat.test("选择城市", function(){
 	Bat.open("http://m.ctrip.com/html5/hotel");
 	//Bat.dom("a[title='酒店']").on("click");
 
@@ -11,7 +11,7 @@ Bat.test("选择城市", function(){
 	Bat.dom('#TAG_without').content("我的位置");
 	Bat.dom('.js_hot_city li[data-cityid="1"]').content("北京");
 	// // // // // Bat.content("上海").on("click");
-	Bat.dom('.js_hot_city li[data-cityid="2"]').on("click");
+	Bat.dom('.js_hot_city li[data-cityid="1"]').on("click");
 
 	Bat.wait.URLChange();
 	Bat.dom(".js_city_title").content("北京");
@@ -21,7 +21,7 @@ Bat.test("选择城市", function(){
 	Bat.wait.URLChange();
 	Bat.dom(".ellips").content("地图");
 
-})
+//})
 
 
 // Bat.test("担保订单", function(){

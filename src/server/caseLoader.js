@@ -28,9 +28,9 @@ page.onError = function(msg, trace) {
 
 
 function loadCase(){
-    var activeCase = fs.read('./case/testCase.js');
+    var activeCase = fs.read('../../demo/case/testCase.js');
     var caseList = activeCase.split("\n") || [];
-		console.log(caseList)
+		// console.log(caseList)
     var newCase = caseList.filter(function(element){
         var reg = /(^\s*\/\/)|(^\s*$)/;
         return !reg.test(element);
@@ -76,8 +76,9 @@ page.onAlert = function(msg){
 
 
 function urlChangeHandle(){
-	page.injectJs('../libs/beacon.0.2.3.mini.js');
-	page.injectJs('./batDemo.js');
+	page.injectJs('../../libs/beacon.0.2.3.mini.js');
+	//page.injectJs('./batDemo.js');
+  page.injectJs('../../demo/demo1/batDemo.js');
 	runCase();
 }
 
@@ -131,8 +132,8 @@ function nextStep(urlChange) {
 
 
 // 初始化
-page.injectJs('../libs/beacon.0.2.3.mini.js');
-page.injectJs('./batDemo.js');
+page.injectJs('../../libs/beacon.0.2.3.mini.js');
+page.injectJs('../../demo/demo1/batDemo.js');
 caseStack.plan = loadCase();
 caseStack.count = caseStack.plan.length;
 console.log('开始执行')

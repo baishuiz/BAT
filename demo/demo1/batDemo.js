@@ -1,8 +1,9 @@
 var timeout = 20 * 1000
 var Bat = function(){
-     alert("Bat is comming!!")   
+     alert("Bat is comming!!")
 }
 
+alert('HI')
 var currentURL = location.href;
 
 var _historyPushState  =  history.pushState;
@@ -36,7 +37,7 @@ function needNext() {
 var cmdStack = [];
 
 var popStack = function() {
-    cmdStack.shift()();	
+    cmdStack.shift()();
 }
 
 function log(msg){
@@ -77,14 +78,14 @@ Bat.dom = function(selector) {
         var start = new Date();
 
         function waitit() {
-        	
+
             var target = hasTarget(selector);
 
             if(target){
                 wait && stopWait(wait);
                 then && then(target);
             }
-            return target           	
+            return target
         }
 
 	    if(!waitit()){
@@ -96,7 +97,7 @@ Bat.dom = function(selector) {
 	            	clearInterval(wait);
 	            	log("超时！！！")
 	            }
-		    }, 200);    
+		    }, 200);
 		}
     }
 
@@ -116,7 +117,7 @@ Bat.dom = function(selector) {
         	    	// },1000)
         	    	//console.log('caseDone!')
         	    	console.log('BAT::CASEDONE')
-        	    	
+
         	    });
         },
 
@@ -131,7 +132,7 @@ Bat.dom = function(selector) {
     	    	log("*****************")
 
 				console.log('BAT::CASEDONE')
-    	    });        	
+    	    });
         }
     }
     return then;
@@ -162,10 +163,9 @@ Bat.wait = {
 		// 此处用 beacon.once 会丢失后续case
         beacon.on("url change", function(){
         	setTimeout(function(){
-        		log("caseDone!");	
+        		log("caseDone!");
         	},1000)
-        	
+
         });
 	}
 }
-
