@@ -14,10 +14,8 @@ describe("Bat.test", function(){
               data = data.subNodes
               var firstCase  = data[0];
               var secondCase = data[1];
-              //expect(firstCase.callBack()).toBe("预订ok");
-              expect(firstCase.data.title).toBe("预订流程");
 
-              //expect(secondCase.data.callBack()).toBe("查询ok");
+              expect(firstCase.data.title).toBe("预订流程");
               expect(secondCase.data.title).toBe("查询流程");
 
               var first_sub0 = firstCase.subNodes[0];
@@ -30,20 +28,16 @@ describe("Bat.test", function(){
               expect(first_sub0_sub1.data.callBack()).toBe("预订2ok");
               expect(first_sub0_sub1.data.title).toBe("预订流程.sub.sub1");
 
-
               var secondCase_sub = secondCase.subNodes[0];
               expect(secondCase_sub.data.title).toBe("查询流程.sub");
-
-
-
 
               done();
         })
 
         bat.test("预订流程", function(){
-          //return "预订ok"
+
           bat.test("预订流程.sub", function(){
-              //return "预订ok"
+
               bat.test("预订流程.sub.sub0", function(){
                   return "预订1ok"
               })
