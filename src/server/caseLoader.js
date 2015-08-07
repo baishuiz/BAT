@@ -36,7 +36,6 @@ page.onError = function(msg, trace) {
 function loadCase(){
     var activeCase = fs.read('../../demo/case/testCase.js');
     var caseList = activeCase.split("\n") || [];
-		// console.log(caseList)
     var newCase = caseList.filter(function(element){
         var reg = /(^\s*\/\/)|(^\s*$)/;
         return !reg.test(element);
@@ -66,9 +65,6 @@ function tryRunCase(){
         caseStack.runing.push(caseStack.plan.shift());
         page.evaluateJavaScript(caseStack.runing[0]);
 	}
-
-
-
 }
 
 
@@ -83,7 +79,6 @@ page.onAlert = function(msg){
 
 function urlChangeHandle(){
 	page.injectJs(injectJs.BAT);
-//  page.injectJs('../../demo/demo1/batDemo.js');
 	runCase();
 }
 
@@ -106,7 +101,6 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
 };
 
 function waitURL(oldURL){
-
     page.onLoadFinished = function(status) {
     	page.onLoadFinished = function(){};
         nextStep(true);
