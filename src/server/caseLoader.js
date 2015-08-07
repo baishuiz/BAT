@@ -7,6 +7,12 @@ page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X)
 var caseContent = [];
 
 
+var injectJs = {
+  BAT : './libs/bat.0.1.1.js'
+};
+
+
+
 var caseStack = {
 	plan : [],
 	runing : [],
@@ -76,9 +82,8 @@ page.onAlert = function(msg){
 
 
 function urlChangeHandle(){
-	page.injectJs('../../libs/beacon.0.2.3.mini.js');
-	//page.injectJs('./batDemo.js');
-  page.injectJs('../../demo/demo1/batDemo.js');
+	page.injectJs(injectJs.BAT);
+//  page.injectJs('../../demo/demo1/batDemo.js');
 	runCase();
 }
 
@@ -103,7 +108,6 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
 function waitURL(oldURL){
 
     page.onLoadFinished = function(status) {
-    	console.log("url 88888")
     	page.onLoadFinished = function(){};
         nextStep(true);
     }
@@ -114,7 +118,7 @@ function nextStep(urlChange) {
     setTimeout(function(){
         // 輸出Case清單
         var doneCase = caseStack.runing.shift();
-		doneCase && caseStack.done.push(doneCase);
+		    doneCase && caseStack.done.push(doneCase);
         console.log("case總數",caseStack.count,";剩餘Case:", caseStack.plan.length, ";已運行:", caseStack.done.length);
 
         // 輸出當前頁面截圖
@@ -132,8 +136,7 @@ function nextStep(urlChange) {
 
 
 // 初始化
-page.injectJs('../../libs/beacon.0.2.3.mini.js');
-page.injectJs('../../demo/demo1/batDemo.js');
+page.injectJs(injectJs.BAT);
 caseStack.plan = loadCase();
 caseStack.count = caseStack.plan.length;
 console.log('开始执行')
