@@ -24,11 +24,31 @@
         activeCase.data && activeCase.data.callBack();
       } else {
         if(nodes.length==0 && context.data.title=="root"){
-          beacon.on(bat.events.ooo, root);
+          //beacon.on(bat.events.ooo, JSON.stringify(root));
+          //beacon.on(bat.events.ooo, root);
+          sendResult(root.subNodes);
         } else {
           beacon(context.parent).on(bat.events.over);
         }
 
+      }
+    }
+
+    function sendResult(result){
+      console.log(result.length);
+      for(var i =0, len= result.length; i<len; i++) {
+          var activeItem = result[i];
+          delete activeItem.parent;
+          //console.log("activeItem.parent")
+          if(activeItem.subNodes.length>0) {
+          //  delete activeItem.data.callBack;
+            sendResult(activeItem.subNodes);
+          } else {
+            activeItem.data.callBack = activeItem.data.callBack.toString().replace(/^function\(\){([\w\W]+?)}$/, "$1");
+          }
+      };
+      if (result === root.subNodes) {
+        beacon.on(bat.events.ooo, JSON.stringify(root));
       }
     }
 

@@ -1,7 +1,9 @@
 var webPage = require('webpage');
 var page    = webPage.create();
 var fs      = require('fs');
-
+var config  = {
+                debug : false
+              }
 
 page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4';
 var caseContent = [];
@@ -29,29 +31,56 @@ page.onError = function(msg, trace) {
       msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function +'")' : ''));
     });
   }
-  console.error(msgStack.join('\n'));
+  config.debug && console.error(msgStack.join('\n'));
 };
 
 
 function loadCase(){
-    var activeCase = fs.read('../../demo/case/testCase.js');
-    var caseList = activeCase.split("\n") || [];
-    var newCase = caseList.filter(function(element){
-        var reg = /(^\s*\/\/)|(^\s*$)/;
-        return !reg.test(element);
+    // 解析 case 执行顺序
+    page.evaluate(function(){
+        beacon.once(bat.events.ooo, function(eventObj, data){
+             parse(data.subNodes, function(){
+
+             });
+        });
     });
 
+    page.injectJs('../../demo/case/testCase.js');
 
-    var result = [];
-    for (var index = 0; index < newCase.length; index++) {
-        var cc = [];
-        cc.push(newCase[index]);
-        newCase[index] = "function(){" + cc.join(";") + "}";
-    };
 
-    return newCase;
+
+
+    // var activeCase = fs.read('../../demo/case/testCase.js');
+    // var caseList = activeCase.split("\n") || [];
+    // var newCase = caseList.filter(function(element){
+    //     var reg = /(^\s*\/\/)|(^\s*$)/;
+    //     return !reg.test(element);
+    // });
+    //
+    //
+    // var result = [];
+    // for (var index = 0; index < newCase.length; index++) {
+    //     var cc = [];
+    //     cc.push(newCase[index]);
+    //     newCase[index] = "function(){" + cc.join(";") + "}";
+    // };
+    //
+    // return newCase;
 }
 
+
+function parseCase(data, callBack) {
+  for(var i=0; i<=data.length; i++) {
+    var activeCase = data[i];
+    if(activeCase.subNodes.length>0) {
+      parseCase(activeCase.subNodes, function(){
+
+      };
+    }
+  }
+
+  callBack && callBack();
+}
 
 
 function runCase (){
@@ -132,6 +161,6 @@ function nextStep(urlChange) {
 // 初始化
 page.injectJs(injectJs.BAT);
 caseStack.plan = loadCase();
-caseStack.count = caseStack.plan.length;
-console.log('开始执行')
-runCase();
+// caseStack.count = caseStack.plan.length;
+// console.log('开始执行')
+// runCase();
