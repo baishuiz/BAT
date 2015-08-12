@@ -54,16 +54,22 @@
         });
 
         lookAt();
-        activeCase.data && activeCase.data.callBack();
+        //activeCase.data && activeCase.data.callBack();
+        activeCase.data && tyrRunCallBack(activeCase.data.callBack)
       } else {
         if(nodes.length==0 && context.data.title=="root"){
-          //beacon.on(bat.events.ooo, JSON.stringify(root));
-          //beacon.on(bat.events.ooo, root);
           sendResult(root.subNodes);
         } else {
           beacon(context.parent).on(bat.events.over);
         }
 
+      }
+    }
+
+    function tyrRunCallBack(fn){
+      var fnStr = fn.toString();
+      if(/bat\.test/.test(fnStr)) {
+        fn();
       }
     }
 
@@ -77,11 +83,12 @@
           //  delete activeItem.data.callBack;
             sendResult(activeItem.subNodes);
           } else {
-            activeItem.data.callBack = activeItem.data.callBack.toString();
+            activeItem.data.callBack = activeItem.data.callBack.toString().replace(/^function\(\){([\w\W]+?)}$/, "$1");
           }
       };
       if (result === root.subNodes) {
-        beacon.on(bat.events.ooo, JSON.stringify(root));
+        //beacon.on(bat.events.ooo, JSON.stringify(root));
+        beacon.on(bat.events.ooo, root);
       }
     }
 

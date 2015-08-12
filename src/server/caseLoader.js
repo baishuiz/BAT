@@ -2,7 +2,7 @@ var webPage = require('webpage');
 var page    = webPage.create();
 var fs      = require('fs');
 var config  = {
-                debug : false
+                debug : true
               }
 
 page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4';
@@ -16,9 +16,9 @@ var injectJs = {
 
 
 var caseStack = {
-	plan : [],
+	plan   : [],
 	runing : [],
-	done : []
+	done   : []
 }
 
 
@@ -35,51 +35,58 @@ page.onError = function(msg, trace) {
 };
 
 
+page.onCallback = function(data) {
+  //  console.log('CALLBACK: ' + JSON.stringify(data));
+  if(data.parseOrderOver) {
+    parseCase(data.parseOrderOver.subNodes, function(){})
+  }
+}
+
 function loadCase(){
     // 解析 case 执行顺序
     page.evaluate(function(){
         beacon.once(bat.events.ooo, function(eventObj, data){
-             parse(data.subNodes, function(){
-
-             });
+             window.callPhantom({
+               parseOrderOver : data
+             })
         });
     });
 
     page.injectJs('../../demo/case/testCase.js');
-
-
-
-
-    // var activeCase = fs.read('../../demo/case/testCase.js');
-    // var caseList = activeCase.split("\n") || [];
-    // var newCase = caseList.filter(function(element){
-    //     var reg = /(^\s*\/\/)|(^\s*$)/;
-    //     return !reg.test(element);
-    // });
-    //
-    //
-    // var result = [];
-    // for (var index = 0; index < newCase.length; index++) {
-    //     var cc = [];
-    //     cc.push(newCase[index]);
-    //     newCase[index] = "function(){" + cc.join(";") + "}";
-    // };
-    //
-    // return newCase;
 }
 
 
 function parseCase(data, callBack) {
-  for(var i=0; i<=data.length; i++) {
+  for(var i=0; i<data.length; i++) {
     var activeCase = data[i];
-    if(activeCase.subNodes.length>0) {
+     if(activeCase.subNodes.length>0) {
       parseCase(activeCase.subNodes, function(){
 
-      };
-    }
+      });
+     } else {
+       caseStack.plan.concat(_loadCase)
+     }
   }
 
   callBack && callBack();
+}
+
+function _loadCase(activeCase){
+  var caseList = activeCase.split("\n") || [];
+  var newCase = caseList.filter(function(element){
+      var reg = /(^\s*\/\/)|(^\s*$)/;
+      return !reg.test(element);
+  });
+
+
+  var result = [];
+  for (var index = 0; index < newCase.length; index++) {
+      var cc = [];
+      cc.push(newCase[index]);
+      newCase[index] = "function(){" + cc.join(";") + "}";
+  };
+
+  return newCase;
 }
 
 
@@ -160,7 +167,7 @@ function nextStep(urlChange) {
 
 // 初始化
 page.injectJs(injectJs.BAT);
-caseStack.plan = loadCase();
+loadCase();
 // caseStack.count = caseStack.plan.length;
 // console.log('开始执行')
 // runCase();

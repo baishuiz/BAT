@@ -31,5 +31,3 @@ process.stdin.pipe(ph.stdin);
 ph.stdout.pipe(process.stdout);
 
 //open('http://m.ctrip.com', 'firefox')
-
-console.log(path.join(__dirname, '../../demo/demo1/batDemo.js'))
