@@ -9,7 +9,7 @@ describe("API 完整性", function(){
 describe("Bat.test", function(){
     it("识别嵌套顺序", function(done){
         beacon.once(bat.events.ooo, function(eventObj, data){
-              data = JSON.parse(data);
+              //data = JSON.parse(data);
               console.log(2)
               console.log(data)
               data = data.subNodes

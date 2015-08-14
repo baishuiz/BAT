@@ -36,9 +36,10 @@ page.onError = function(msg, trace) {
 
 
 page.onCallback = function(data) {
-  //  console.log('CALLBACK: ' + JSON.stringify(data));
   if(data.parseOrderOver) {
-    parseCase(data.parseOrderOver.subNodes, function(){})
+    parseCase(data.parseOrderOver.subNodes,-1, function(){
+      //console.log(JSON.stringify(caseStack.plan))
+    })
   }
 }
 
@@ -46,6 +47,7 @@ function loadCase(){
     // 解析 case 执行顺序
     page.evaluate(function(){
         beacon.once(bat.events.ooo, function(eventObj, data){
+             alert(data.subNodes[0].subNodes[0].data.title)
              window.callPhantom({
                parseOrderOver : data
              })
@@ -56,16 +58,44 @@ function loadCase(){
 }
 
 
-function parseCase(data, callBack) {
+function parseCase(data, parentID, callBack) {
+
   for(var i=0; i<data.length; i++) {
     var activeCase = data[i];
-     if(activeCase.subNodes.length>0) {
-      parseCase(activeCase.subNodes, function(){
+    // console.log(activeCase.data.title)
+    // console.log(JSON.stringify(activeCase))
+    if(activeCase.subNodes.length>0) {
+
+      // append node to tree
+      var activeNode = {
+          data         : "bat.log("+ activeCase.data.title +")",
+          firstSub     : activeCase.subNodes && activeCase.subNodes[0],
+          rightSibling : data[i+1],
+          parent       : activeCase.parent
+      };
+      var nextID = caseStack.plan.push(activeNode);
+      // console.log(nextID)
+      // console.log(caseStack.plan)
+
+      parseCase(activeCase.subNodes, nextID, function(){
 
       });
-     } else {
-       caseStack.plan.concat(_loadCase)
-     }
+    } else {
+      var cases = _loadCase(activeCase.data.callBack);
+
+      for (var caseIndex = 0; caseIndex < cases.length; caseIndex++) {
+        batCase = cases[caseIndex];
+        // append node to tree
+        var activeNode = {
+            data         : batCase,
+            firstSub     : activeCase.subNodes && activeCase.subNodes[0],
+            rightSibling : data[i+1],
+            parent       : parentID
+        };
+        caseStack.plan.push(activeNode);
+      }
+      //caseStack.plan.concat(_loadCase)
+    }
   }
 
   callBack && callBack();
@@ -81,9 +111,10 @@ function _loadCase(activeCase){
 
   var result = [];
   for (var index = 0; index < newCase.length; index++) {
-      var cc = [];
-      cc.push(newCase[index]);
-      newCase[index] = "function(){" + cc.join(";") + "}";
+      var activeLine = newCase[index];
+      activeLine = activeLine.replace(/\r|\n/g,"");
+      newCase[index] = "function(){" + activeLine + "}";
+      console.log(newCase[index],"***")
   };
 
   return newCase;

@@ -44,13 +44,13 @@
       console.log(result.length);
       for(var i =0, len= result.length; i<len; i++) {
           var activeItem = result[i];
-          delete activeItem.parent;
+        //  delete activeItem.parent;
           //console.log("activeItem.parent")
           if(activeItem.subNodes.length>0) {
           //  delete activeItem.data.callBack;
             sendResult(activeItem.subNodes);
           } else {
-            activeItem.data.callBack = activeItem.data.callBack.toString().replace(/^function\(\){([\w\W]+?)}$/, "$1");
+            activeItem.data.callBack = activeItem.data.callBack.toString().replace(/^function\s*\(\s*\)\s*\{([\w\W]+?)\}$/, "$1");
           }
       };
       if (result === root.subNodes) {
