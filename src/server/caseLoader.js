@@ -37,7 +37,8 @@ page.onError = function(msg, trace) {
 
 page.onCallback = function(data) {
   if(data.parseOrderOver) {
-    parseCase(data.parseOrderOver.subNodes,-1, function(){
+    parseCase(data.parseOrderOver.subNodes,-1, function(subNodeIndex){
+
       console.log(JSON.stringify(caseStack.plan))
     })
   }
@@ -78,6 +79,7 @@ var tree = {
 }
 
 function parseCase(data, parentID, callBack) {
+  var subNodes = [];
   for(var i=0; i<data.length; i++) {
     var activeCase = data[i];
     console.log(data.length)
@@ -89,11 +91,26 @@ function parseCase(data, parentID, callBack) {
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
 
-      // parse subNodes
-      parseCase(activeCase.subNodes, activeNodeId, function(){
+      // record index of subNode
+      console.log(activeNodeId, "888888888888888888888888888")
+      subNodes.push(activeNode);
 
+      // parse subNodes
+      parseCase(activeCase.subNodes, activeNodeId, function(subNodeIndex){
+          caseStack.plan[activeNodeId].firstSub = subNodeIndex[0];
+          console.log(subNodeIndex[0],"************************")
       });
+
+      console.log(subNodes.length,7777777777777777)
+      if(subNodes[i-1]){
+        console.log("9999999999999999999999999999999999")
+        subNodes[i-1].rightSibling = activeNodeId;
+      }
+
     } else {
+
+
+
 
       var cases = _loadCase(activeCase.data.callBack);
 
@@ -102,18 +119,37 @@ function parseCase(data, parentID, callBack) {
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
 
+      // record index of subNode
+      console.log(activeNodeId, "888888888888888888888888888")
+      subNodes.push(activeNode);
+      
+      console.log(subNodes.length,7777777777777778)
+      if(subNodes[i-1]){
+        console.log("99999999999999999999999999999999910")
+        subNodes[i-1].rightSibling = activeNodeId;
+      }
+
+
+      var tempCaseList = [];
       for (var caseIndex = 0; caseIndex < cases.length; caseIndex++) {
 
         // append node to tree
         var action = cases[caseIndex];
         var activeNode = tree.createNode(activeCase, activeNodeId, action);
-        tree.insertNode(activeNode);
+        var nodeID = tree.insertNode(activeNode);
+
+        tempCaseList.push(activeNode);
+        if(tempCaseList[caseIndex-1]){
+         tempCaseList[caseIndex-1].rightSibling = nodeID;
+        }
       }
       //caseStack.plan.concat(_loadCase)
     }
+
   }
 
-  callBack && callBack();
+console.log(subNodes,"666666666666666")
+  callBack && callBack(subNodes);
 }
 
 function _loadCase(activeCase){

@@ -16,3 +16,5 @@ bat.test("城市选择", function(){
 		bat.dom('.ui-view-60 data-key=["2"]').on('click');
   });
 });
+
+bat.test("本地定位", function(){});
