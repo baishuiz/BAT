@@ -40,6 +40,7 @@ page.onCallback = function(data) {
     parseCase(data.parseOrderOver.subNodes,-1, function(subNodeIndex){
 
       console.log(JSON.stringify(caseStack.plan))
+      runCase();
     })
   }
 }
@@ -88,23 +89,19 @@ function parseCase(data, parentID, callBack) {
     if(activeCase.subNodes.length>0) {
 
       // append node to tree
-      var cmd = "bat.log(" + activeCase.data.title + ")"
+      var cmd = "bat.log('" + activeCase.data.title + "')"
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
       firstSubIndex = firstSubIndex || activeNodeId
       // record index of subNode
-      console.log(activeNodeId, "888888888888888888888888888")
       subNodes.push(activeNode);
 
       // parse subNodes
       parseCase(activeCase.subNodes, activeNodeId, function(firstSubIndex){
           activeNode.firstSub = firstSubIndex;
-          console.log(firstSubIndex,"************************")
       });
 
-      console.log(subNodes.length,7777777777777777)
       if(subNodes[i-1]){
-        console.log("9999999999999999999999999999999999")
         subNodes[i-1].rightSibling = activeNodeId;
       }
 
@@ -116,7 +113,7 @@ function parseCase(data, parentID, callBack) {
       var cases = _loadCase(activeCase.data.callBack);
 
       // append node to tree
-      var cmd = "bat.log(" + activeCase.data.title + ")"
+      var cmd = "bat.log('" + activeCase.data.title + "')"
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
       firstSubIndex = firstSubIndex || activeNodeId
@@ -149,7 +146,6 @@ function parseCase(data, parentID, callBack) {
         }
       }
       activeNode.firstSub = cmdid;
-      //caseStack.plan.concat(_loadCase)
     }
 
   }
@@ -177,16 +173,37 @@ function _loadCase(activeCase){
 
 
 function runCase (){
-	if (caseStack.plan.length<=0) return;
+	// if (caseStack.plan.length<=0) return;
+  console.log("HIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIH")
 	tryRunCase();
 }
 
 
 function tryRunCase(){
-	if(caseStack.runing.length<=0){
-        caseStack.runing.push(caseStack.plan.shift());
-        page.evaluateJavaScript(caseStack.runing[0]);
-	}
+	// if(caseStack.runing.length<=0){
+        // caseStack.runing.push(caseStack.plan.shift());
+        // page.evaluateJavaScript(caseStack.runing[0]);
+ //	}
+    caseStack.plan.activeAction = caseStack.plan.activeAction ||   caseStack.plan[0];
+    caseStack.runing.push(caseStack.plan.activeAction);
+    console.log(caseStack.runing[0].data)
+    page.evaluateJavaScript(caseStack.runing[0].data);
+    next();
+
+}
+
+function next(){
+  if(caseStack.plan.activeAction.firstSub) {
+    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.firstSub];
+    caseStack.plan.activeAction.firstSub = null;
+  } else if(caseStack.plan.activeAction.rightSibling){
+    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.rightSibling];
+    caseStack.plan.activeAction.rightSibling = null;
+  } else {
+    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.parent];
+    next();
+
+  }
 }
 
 

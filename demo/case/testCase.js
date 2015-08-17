@@ -1,4 +1,3 @@
-
 bat.test("城市选择", function(){
   bat.test("国内酒店", function(){
     bat.open("http://m.ctrip.com/html5/hotel");
