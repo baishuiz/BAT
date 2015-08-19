@@ -3,6 +3,19 @@
     // var userCaseManage = new base.TaskManage();
     // var segmentManger  = new base.TaskManage();
     //var stage = new base.Page();
+
+
+    var _historyPushState  =  history.pushState;
+    window.history.pushState = function(json,title,url){
+    //    beacon.on("url change");
+     console.log("BAT::CASEDONE");
+         alert("BAT URL Change to:" + url);
+        //_historyPushState.apply(window, arguments)
+        _historyPushState.call(window.history,json,title,url)
+        //alert("BAT::URLCHANGED");
+    }
+
+
     var openAPI = {
 
         config : function(config){
@@ -47,6 +60,10 @@
         },
 
         test : base.test,
+        log : base.log,
+        open : base.open,
+        dom : base.dom,
+        wait : base.wait,
 
         events : base.events,
 

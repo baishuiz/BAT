@@ -143,9 +143,142 @@
 }) (bat);
 ;;(function (bat) {
     var base = bat.base;
+
+    function log(msg){
+      console && console.log(msg);
+      console.log('BAT::CASEDONE')
+    }
+
+    base.log = log;
+}) (bat);
+;;(function (bat) {
+    var base = bat.base;
+
+    function open(url){
+      window.location = url;
+    	console.log("BAT::WAITURL");
+    }
+
+    base.open = open;
+}) (bat);
+;;(function (bat) {
+    var base = bat.base;
+
+    var timeout = 20 * 1000
+    function log(msg){
+        alert(msg);
+    }
+
+    function dom(selector){
+
+          function hasTarget(selector){
+          	var target = document.querySelector(selector);
+          	return target ;
+          }
+
+          function starWait(selector , then){
+      	    var result;
+              var start = new Date();
+
+              function waitit() {
+
+                  var target = hasTarget(selector);
+
+                  if(target){
+                      wait && stopWait(wait);
+                      then && then(target);
+                  }
+                  return target
+              }
+
+      	    if(!waitit()){
+      		    var wait = setInterval(function(){
+      	            waitit();
+      	            alert(".")
+      	            var now = new Date();
+      	            if(now - start >= timeout) {
+      	            	clearInterval(wait);
+      	            	log("超时！！！")
+      	            }
+      		    }, 200);
+      		}
+          }
+
+          function stopWait(wait) {
+          	clearInterval(wait);
+          }
+
+
+
+          var then = {
+              on : function(eventName){
+              	    starWait(selector, function(target){
+              	    	log("事件执行" + eventName)
+              	    	beacon(target).on(eventName);
+              	    	// setTimeout(function(){
+              	    	// 	alert('caseDone!')
+              	    	// },1000)
+              	    	//console.log('caseDone!')
+              	    	console.log('BAT::CASEDONE')
+
+              	    });
+              },
+
+              content : function(txt) {
+              	//log(txt)
+          	    starWait(selector, function(target){
+          	    	var content = target.innerText.replace(/^\s+|\s+$/ig,"");
+          	    	var result =   content === txt;
+          	    	//log("*****************")
+          	    	log(content + " vs " + txt)
+          	    	log(result)
+          	    	log("*****************")
+
+      				console.log('BAT::CASEDONE')
+          	    });
+              }
+          }
+          return then;
+    }
+
+    base.dom = dom;
+}) (bat);
+;
+;(function (bat) {
+    var base = bat.base;
+
+    var wait = {
+    	URLChange : function(timeout){
+    		// 此处用 beacon.once 会丢失后续case
+            beacon.on("url change", function(){
+            	setTimeout(function(){
+            		alert("BAT::CASEDONE!!");
+            	},1000)
+
+            });
+    	}
+    }
+
+    base.wait = wait;
+}) (bat);
+;;(function (bat) {
+    var base = bat.base;
     // var userCaseManage = new base.TaskManage();
     // var segmentManger  = new base.TaskManage();
     //var stage = new base.Page();
+
+
+    var _historyPushState  =  history.pushState;
+    window.history.pushState = function(json,title,url){
+    //    beacon.on("url change");
+     console.log("BAT::CASEDONE");
+         alert("BAT URL Change to:" + url);
+        //_historyPushState.apply(window, arguments)
+        _historyPushState.call(window.history,json,title,url)
+        //alert("BAT::URLCHANGED");
+    }
+
+
     var openAPI = {
 
         config : function(config){
@@ -190,6 +323,10 @@
         },
 
         test : base.test,
+        log : base.log,
+        open : base.open,
+        dom : base.dom,
+        wait : base.wait,
 
         events : base.events,
 

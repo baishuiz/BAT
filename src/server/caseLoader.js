@@ -39,7 +39,7 @@ page.onCallback = function(data) {
   if(data.parseOrderOver) {
     parseCase(data.parseOrderOver.subNodes,-1, function(subNodeIndex){
 
-      console.log(JSON.stringify(caseStack.plan))
+      // console.log(JSON.stringify(caseStack.plan))
       runCase();
     })
   }
@@ -84,12 +84,12 @@ function parseCase(data, parentID, callBack) {
   var firstSubIndex ;
   for(var i=0; i<data.length; i++) {
     var activeCase = data[i];
-    console.log(data.length)
-    console.log(activeCase.subNodes.length,'**')
+    // console.log(data.length)
+    // console.log(activeCase.subNodes.length,'**')
     if(activeCase.subNodes.length>0) {
 
       // append node to tree
-      var cmd = "bat.log('" + activeCase.data.title + "')"
+      var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
       firstSubIndex = firstSubIndex || activeNodeId
@@ -113,7 +113,7 @@ function parseCase(data, parentID, callBack) {
       var cases = _loadCase(activeCase.data.callBack);
 
       // append node to tree
-      var cmd = "bat.log('" + activeCase.data.title + "')"
+      var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
       var activeNode = tree.createNode(activeCase, parentID, cmd);
       activeNodeId = tree.insertNode(activeNode);
       firstSubIndex = firstSubIndex || activeNodeId
@@ -174,33 +174,52 @@ function _loadCase(activeCase){
 
 function runCase (){
 	// if (caseStack.plan.length<=0) return;
-  console.log("HIHIHIHIHIHIHIHIHIHIHIHIHIHIHIHIH")
+  // if(caseStack.plan.activeAction === caseStack.plan[caseStack.plan.length-1]){
+  //   console.log(JSON.stringify(caseStack.plan.activeAction));
+  //   return
+  // }
+  if(!caseStack.plan.activeAction && caseStack.done.length>0){
+    console.log(JSON.stringify(caseStack.plan.activeAction));
+    return
+  }
 	tryRunCase();
 }
 
 
 function tryRunCase(){
-	// if(caseStack.runing.length<=0){
-        // caseStack.runing.push(caseStack.plan.shift());
-        // page.evaluateJavaScript(caseStack.runing[0]);
- //	}
     caseStack.plan.activeAction = caseStack.plan.activeAction ||   caseStack.plan[0];
+    if(!caseStack.plan.activeAction){
+      console.log('hello')
+      return
+    }
+
     caseStack.runing.push(caseStack.plan.activeAction);
-    console.log(caseStack.runing[0].data)
     page.evaluateJavaScript(caseStack.runing[0].data);
     next();
 
 }
 
 function next(){
+
+  if(!caseStack.plan.activeAction && caseStack.done.length>0){
+    return
+  }
+
+  // console.log(caseStack.plan.activeAction.firstSub)
+  // console.log(caseStack.plan.activeAction.rightSibling)
+  // console.log(caseStack.plan.activeAction.parent)
+  var nextID;
   if(caseStack.plan.activeAction.firstSub) {
-    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.firstSub];
+    nextID = caseStack.plan.activeAction.firstSub;
     caseStack.plan.activeAction.firstSub = null;
+    caseStack.plan.activeAction = caseStack.plan[nextID];
   } else if(caseStack.plan.activeAction.rightSibling){
-    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.rightSibling];
+    nextID = caseStack.plan.activeAction.rightSibling;
     caseStack.plan.activeAction.rightSibling = null;
+    caseStack.plan.activeAction = caseStack.plan[nextID];
   } else {
     caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.parent];
+
     next();
 
   }
@@ -226,7 +245,6 @@ function urlChangeHandle(){
 
 
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
-
 	switch (msg) {
         case "BAT::CASEDONE" :
         	nextStep();
@@ -252,10 +270,11 @@ function nextStep(urlChange) {
         // 輸出Case清單
         var doneCase = caseStack.runing.shift();
 		    doneCase && caseStack.done.push(doneCase);
-        console.log("case總數",caseStack.count,";剩餘Case:", caseStack.plan.length, ";已運行:", caseStack.done.length);
+        console.log("case總數",caseStack.plan.length,";剩餘Case:", caseStack.plan.length-caseStack.done.length, ";已運行:", caseStack.done.length);
 
         // 輸出當前頁面截圖
         page.render("case"+caseStack.done.length + ".png")
+
 
         // 執行下一個case
         urlChange

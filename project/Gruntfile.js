@@ -16,6 +16,10 @@ module.exports = function(grunt){
                       '../src/client/bat.js',
                       '../src/client/events.js',
                       '../src/client/test.js',
+                      '../src/client/log.js',
+                      '../src/client/testAPI/open.js',
+                      '../src/client/testAPI/dom.js',
+                      '../src/client/testAPI/wait.js',
                       '../src/client/openAPI.js'
                     ],
                 dest: '../dist/<%= output.fileName %>'
