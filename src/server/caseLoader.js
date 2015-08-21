@@ -1,19 +1,18 @@
 var webPage = require('webpage');
 var page    = webPage.create();
 var fs      = require('fs');
+
+// base config info
 var config  = {
-                debug : true
-              }
-
-page.settings.userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4';
-var caseContent = [];
-
+  debug : true,
+  userAgent : 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4'
+}
 
 var injectJs = {
   BAT : './libs/bat.0.1.1.js'
 };
 
-
+var casePath = '../../demo/case/testCase.js';  // TODO ： 修改为从命令行参数接收
 
 var caseStack = {
 	plan   : [],
@@ -21,7 +20,7 @@ var caseStack = {
 	done   : []
 }
 
-
+page.settings.userAgent = config.userAgent;
 
 page.onError = function(msg, trace) {
   var msgStack = ['ERROR: ' + msg];
@@ -34,19 +33,18 @@ page.onError = function(msg, trace) {
   config.debug && console.error(msgStack.join('\n'));
 };
 
-
 page.onCallback = function(data) {
-  if(data.parseOrderOver) {
-    parseCase(data.parseOrderOver.subNodes,-1, function(subNodeIndex){
 
-      // console.log(JSON.stringify(caseStack.plan))
+  // run case
+  if(data.parseOrderOver) {
+    parseCase(data.parseOrderOver.subNodes, -1, function(subNodeIndex){
       runCase();
     })
   }
 }
 
-function loadCase(){
-    // 解析 case 执行顺序
+// 解析 case 嵌套结构
+function parseStructure(){
     page.evaluate(function(){
         beacon.once(bat.events.ooo, function(eventObj, data){
              window.callPhantom({
@@ -55,7 +53,7 @@ function loadCase(){
         });
     });
 
-    page.injectJs('../../demo/case/testCase.js');
+    page.injectJs(casePath);
 }
 
 
@@ -171,43 +169,25 @@ function _loadCase(activeCase){
   return newCase;
 }
 
-
-function runCase (){
-	// if (caseStack.plan.length<=0) return;
-  // if(caseStack.plan.activeAction === caseStack.plan[caseStack.plan.length-1]){
-  //   console.log(JSON.stringify(caseStack.plan.activeAction));
-  //   return
-  // }
-  if(!caseStack.plan.activeAction && caseStack.done.length>0){
-    console.log(JSON.stringify(caseStack.plan.activeAction));
-    return
-  }
-	tryRunCase();
+function isAllDone(){
+  var allDone = !caseStack.plan.activeAction && caseStack.done.length > 0;
+  return allDone;
 }
 
+function runCase (){
+  if(isAllDone()){
+    return
+  }
 
-function tryRunCase(){
-    caseStack.plan.activeAction = caseStack.plan.activeAction ||   caseStack.plan[0];
-    if(!caseStack.plan.activeAction){
-      console.log('hello')
-      return
-    }
-
-    caseStack.runing.push(caseStack.plan.activeAction);
-    page.evaluateJavaScript(caseStack.runing[0].data);
-    next();
+  caseStack.plan.activeAction = caseStack.plan.activeAction || caseStack.plan[0];
+  caseStack.runing.push(caseStack.plan.activeAction);
+  page.evaluateJavaScript(caseStack.runing[0].data);
+  next();
 
 }
 
 function next(){
 
-  if(!caseStack.plan.activeAction && caseStack.done.length>0){
-    return
-  }
-
-  // console.log(caseStack.plan.activeAction.firstSub)
-  // console.log(caseStack.plan.activeAction.rightSibling)
-  // console.log(caseStack.plan.activeAction.parent)
   var nextID;
   if(caseStack.plan.activeAction.firstSub) {
     nextID = caseStack.plan.activeAction.firstSub;
@@ -219,12 +199,9 @@ function next(){
     caseStack.plan.activeAction = caseStack.plan[nextID];
   } else {
     caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.parent];
-
-    next();
-
+    isAllDone() || next();
   }
 }
-
 
 page.onAlert = function(msg){
 	switch (msg) {
@@ -234,15 +211,10 @@ page.onAlert = function(msg){
 	}
 }
 
-
 function urlChangeHandle(){
 	page.injectJs(injectJs.BAT);
 	runCase();
 }
-
-
-
-
 
 page.onConsoleMessage = function(msg, lineNum, sourceId) {
 	switch (msg) {
@@ -264,7 +236,6 @@ function waitURL(oldURL){
     }
 }
 
-
 function nextStep(urlChange) {
     setTimeout(function(){
         // 輸出Case清單
@@ -284,12 +255,13 @@ function nextStep(urlChange) {
     },3000);
 }
 
+function init(){
+  // 初始化
+  page.injectJs(injectJs.BAT);
+  parseStructure();
+  // caseStack.count = caseStack.plan.length;
+  // console.log('开始执行')
+  // runCase();
+}
 
-
-
-// 初始化
-page.injectJs(injectJs.BAT);
-loadCase();
-// caseStack.count = caseStack.plan.length;
-// console.log('开始执行')
-// runCase();
+init();
