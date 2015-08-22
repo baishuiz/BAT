@@ -80,75 +80,53 @@ var tree = {
 function parseCase(data, parentID, callBack) {
   var subNodes = [];
   var firstSubIndex ;
-  for(var i=0; i<data.length; i++) {
+  for(var i = 0; i < data.length; i++) {
     var activeCase = data[i];
-    // console.log(data.length)
-    // console.log(activeCase.subNodes.length,'**')
+
+    // append node to tree
+    var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
+    var activeNode = tree.createNode(activeCase, parentID, cmd);
+    activeNodeId = tree.insertNode(activeNode);
+    firstSubIndex = firstSubIndex || activeNodeId
+
+    // record index of subNode
+    subNodes.push(activeNode);
+
+    if(subNodes[i-1]){
+      subNodes[i-1].rightSibling = activeNodeId;
+    }
+
     if(activeCase.subNodes.length>0) {
-
-      // append node to tree
-      var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
-      var activeNode = tree.createNode(activeCase, parentID, cmd);
-      activeNodeId = tree.insertNode(activeNode);
-      firstSubIndex = firstSubIndex || activeNodeId
-      // record index of subNode
-      subNodes.push(activeNode);
-
       // parse subNodes
       parseCase(activeCase.subNodes, activeNodeId, function(firstSubIndex){
           activeNode.firstSub = firstSubIndex;
       });
-
-      if(subNodes[i-1]){
-        subNodes[i-1].rightSibling = activeNodeId;
-      }
-
     } else {
-
-
-
-
-      var cases = _loadCase(activeCase.data.callBack);
-
-      // append node to tree
-      var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
-      var activeNode = tree.createNode(activeCase, parentID, cmd);
-      activeNodeId = tree.insertNode(activeNode);
-      firstSubIndex = firstSubIndex || activeNodeId
-
-
-
-
-      // record index of subNode
-      subNodes.push(activeNode);
-
-      if(subNodes[i-1]){
-        subNodes[i-1].rightSibling = activeNodeId;
-      }
-
-
-      var tempCaseList = [];
-      var cmdid=""
-      for (var caseIndex = 0; caseIndex < cases.length; caseIndex++) {
-
-        // append node to tree
-        var action = cases[caseIndex];
-        var activeAction = tree.createNode(activeCase, activeNodeId, action);
-
-        var nodeID = tree.insertNode(activeAction);
-        cmdid = cmdid || nodeID
-
-        tempCaseList.push(activeAction);
-        if(tempCaseList[caseIndex-1]){
-         tempCaseList[caseIndex-1].rightSibling = nodeID;
-        }
-      }
-      activeNode.firstSub = cmdid;
+      activeNode.firstSub = parseAction(activeCase);
     }
-
   }
-
   callBack && callBack(firstSubIndex);
+}
+
+function parseAction(activeCase){
+  var cases = _loadCase(activeCase.data.callBack);
+  var tempCaseList = [];
+  var cmdid=""
+  for (var caseIndex = 0; caseIndex < cases.length; caseIndex++) {
+
+    // append node to tree
+    var action = cases[caseIndex];
+    var activeAction = tree.createNode(activeCase, activeNodeId, action);
+
+    var nodeID = tree.insertNode(activeAction);
+    cmdid = cmdid || nodeID
+
+    tempCaseList.push(activeAction);
+    if(tempCaseList[caseIndex-1]){
+     tempCaseList[caseIndex-1].rightSibling = nodeID;
+    }
+  }
+  return cmdid;
 }
 
 function _loadCase(activeCase){
@@ -176,6 +154,7 @@ function isAllDone(){
 
 function runCase (){
   if(isAllDone()){
+    console.log('运行结束')
     return
   }
 
@@ -260,7 +239,7 @@ function init(){
   page.injectJs(injectJs.BAT);
   parseStructure();
   // caseStack.count = caseStack.plan.length;
-  // console.log('开始执行')
+  console.log('开始执行')
   // runCase();
 }
 
