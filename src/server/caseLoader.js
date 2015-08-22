@@ -3,8 +3,8 @@ var page    = webPage.create();
 var fs      = require('fs');
 
 // base config info
-var config  = {
-  debug : true,
+ var config  = {
+  debug     : true,
   userAgent : 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4'
 }
 
@@ -42,6 +42,27 @@ page.onCallback = function(data) {
     })
   }
 }
+
+page.onAlert = function(msg){
+	switch (msg) {
+		default :
+		    console.log(msg);
+		    break;
+	}
+}
+
+page.onConsoleMessage = function(msg, lineNum, sourceId) {
+	switch (msg) {
+        case "BAT::CASEDONE" :
+        	nextStep();
+            break;
+        case "BAT::WAITURL" :
+            waitURL(page.url);
+            break;
+        default :
+            break;
+	}
+};
 
 // 解析 case 嵌套结构
 function parseStructure(){
@@ -86,14 +107,15 @@ function parseCase(data, parentID, callBack) {
     // append node to tree
     var cmd = "function(){bat.log('" + activeCase.data.title + "')}"
     var activeNode = tree.createNode(activeCase, parentID, cmd);
-    activeNodeId = tree.insertNode(activeNode);
-    firstSubIndex = firstSubIndex || activeNodeId
+    activeNodeId   = tree.insertNode(activeNode);
+    firstSubIndex  = firstSubIndex || activeNodeId;
 
     // record index of subNode
     subNodes.push(activeNode);
 
-    if(subNodes[i-1]){
-      subNodes[i-1].rightSibling = activeNodeId;
+    var previousNode = subNodes[i-1];
+    if(previousNode){
+      previousNode.rightSibling = activeNodeId;
     }
 
     if(activeCase.subNodes.length>0) {
@@ -185,31 +207,10 @@ function next(){
   }
 }
 
-page.onAlert = function(msg){
-	switch (msg) {
-		default :
-		    console.log(msg);
-		    break;
-	}
-}
-
 function urlChangeHandle(){
 	page.injectJs(injectJs.BAT);
 	runCase();
 }
-
-page.onConsoleMessage = function(msg, lineNum, sourceId) {
-	switch (msg) {
-        case "BAT::CASEDONE" :
-        	nextStep();
-            break;
-        case "BAT::WAITURL" :
-            waitURL(page.url);
-            break;
-        default :
-            break;
-	}
-};
 
 function waitURL(oldURL){
     page.onLoadFinished = function(status) {
@@ -228,7 +229,6 @@ function nextStep(urlChange) {
         // 輸出當前頁面截圖
         page.render("case"+caseStack.done.length + ".png")
 
-
         // 執行下一個case
         urlChange
         ? urlChangeHandle()
@@ -241,9 +241,7 @@ function init(){
   // 初始化
   page.injectJs(injectJs.BAT);
   parseStructure();
-  // caseStack.count = caseStack.plan.length;
   console.log('开始执行')
-  // runCase();
 }
 
 init();
