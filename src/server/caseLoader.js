@@ -167,17 +167,20 @@ function runCase (){
 
 function next(){
 
-  var nextID;
-  if(caseStack.plan.activeAction.firstSub) {
-    nextID = caseStack.plan.activeAction.firstSub;
-    caseStack.plan.activeAction.firstSub = null;
+  var activeNode = caseStack.plan.activeAction;
+  function go(target) {
+    var nextID;
+    nextID = activeNode[target];
+    activeNode[target] = null;
     caseStack.plan.activeAction = caseStack.plan[nextID];
-  } else if(caseStack.plan.activeAction.rightSibling){
-    nextID = caseStack.plan.activeAction.rightSibling;
-    caseStack.plan.activeAction.rightSibling = null;
-    caseStack.plan.activeAction = caseStack.plan[nextID];
+  }
+
+  if(activeNode.firstSub) {
+    go('firstSub');
+  } else if(activeNode.rightSibling){
+    go('rightSibling');
   } else {
-    caseStack.plan.activeAction = caseStack.plan[caseStack.plan.activeAction.parent];
+    caseStack.plan.activeAction = caseStack.plan[activeNode.parent];
     isAllDone() || next();
   }
 }
