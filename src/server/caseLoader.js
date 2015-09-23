@@ -235,9 +235,7 @@ function nextStep(urlChange) {
 
 
         page.evaluateJavaScript(function(){
-          alert(window.bat)
           if(!window.bat){
-            alert("#################")
             alert("BAT::reloadBAT")
           }
         })
