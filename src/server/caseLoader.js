@@ -45,6 +45,9 @@ page.onCallback = function(data) {
 
 page.onAlert = function(msg){
 	switch (msg) {
+    case "BAT::reloadBAT" :
+        page.injectJs(injectJs.BAT);
+        break;
 		default :
 		    console.log(msg);
 		    break;
@@ -59,6 +62,7 @@ page.onConsoleMessage = function(msg, lineNum, sourceId) {
         case "BAT::WAITURL" :
             waitURL(page.url);
             break;
+
         default :
             break;
 	}
@@ -228,6 +232,16 @@ function nextStep(urlChange) {
 
         // 輸出當前頁面截圖
         page.render("case"+caseStack.done.length + ".png")
+
+
+        page.evaluateJavaScript(function(){
+          alert(window.bat)
+          if(!window.bat){
+            alert("#################")
+            alert("BAT::reloadBAT")
+          }
+        })
+
 
         // 執行下一個case
         urlChange
