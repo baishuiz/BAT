@@ -9,7 +9,7 @@ var fs      = require('fs');
 }
 
 var injectJs = {
-  BAT : './libs/bat.0.1.1.js'
+  BAT : './libs/bat.0.1.2.js'
 };
 
 var casePath = '../../demo/case/testCase.js';  // TODO ： 修改为从命令行参数接收

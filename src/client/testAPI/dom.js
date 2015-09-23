@@ -61,6 +61,16 @@
               	    });
               },
 
+              value : function(value){
+                    starWait(selector, function(target){
+                      log("填写value" + value)
+                      target.value = value;
+                      beacon(target).on("change");
+                      console.log('BAT::CASEDONE')
+
+                    });
+              },              
+
               content : function(txt) {
               	//log(txt)
           	    starWait(selector, function(target){

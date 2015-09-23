@@ -26,7 +26,8 @@
     var events = {
       complete : beacon.createEvent('complete'),
       ooo : beacon.createEvent('ooo'),
-      over : beacon.createEvent('over')
+      over : beacon.createEvent('over'),
+      parseDone : beacon.createEvent('done')
     }
 
     base.events = events;
@@ -223,6 +224,16 @@
 
               	    });
               },
+
+              value : function(value){
+                    starWait(selector, function(target){
+                      log("填写value" + value)
+                      target.value = value;
+                      beacon(target).on("change");
+                      console.log('BAT::CASEDONE')
+
+                    });
+              },              
 
               content : function(txt) {
               	//log(txt)
